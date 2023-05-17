@@ -1,0 +1,13 @@
+port: 3000
+
+postgresql:
+  auth:
+    database: "wlosiara-pl-blog-service"
+    username: "wlosiara-pl-blog-service"
+  primary:
+    initdb:
+      scripts-configmap: "wlosiara-pl-blog-service-postgresql-initdb-scripts-configmap"
+
+image:
+  dockerRegistry:
+    host: null # required
