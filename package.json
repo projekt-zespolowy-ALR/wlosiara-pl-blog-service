@@ -1,6 +1,6 @@
 {
 	"name": "wlosiara-pl-blog-service",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "wlosiara.pl - Blog service",
 	"private": true,
 	"main": "./dist/src/main.js",
