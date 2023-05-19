@@ -1,5 +1,5 @@
 import {Test} from "@nestjs/testing";
-import {describe, beforeEach, afterEach, beforeAll, test, expect} from "@jest/globals";
+import {describe, test, expect, beforeEach, afterEach, beforeAll} from "@jest/globals";
 import type {NestFastifyApplication} from "@nestjs/platform-fastify";
 import * as Testcontainers from "testcontainers";
 import AppOrmModule from "../../../src/app_orm/AppOrmModule.js";
@@ -66,8 +66,90 @@ describe("PostsModule", () => {
 	afterEach(async () => {
 		await Promise.all([postgresqlContainer.stop(), app.close()]);
 	});
+	describe("v1", () => {
+		describe("Empty database", () => {
+			test("GET /posts", async () => {
+				const response = await app.inject({
+					method: "GET",
+					url: "/v1/posts",
+				});
+				expect(response.statusCode).toBe(200);
+				expect(response.json()).toEqual({
+					items: [],
+					meta: {skip: 0, take: 10, totalItemsCount: 0, pageItemsCount: 0},
+				});
+			});
+			test("GET /posts/:id", async () => {
+				const response = await app.inject({
+					method: "GET",
+					url: "/v1/posts/1",
+				});
+				expect(response.statusCode).toBe(400);
+			});
+			test("POST /posts", async () => {
+				const addPostRequestBody = {
+					title: "test2",
+					contentMd: "test2 content",
+					authorId: "f59b36aa-94cc-40a8-b164-9b40645602dd",
+					imageUrl: "http://image.jpg",
+				} as const;
+				const response = await app.inject({
+					method: "POST",
+					url: "/v1/posts",
+					payload: addPostRequestBody,
+				});
+				expect(response.statusCode).toBe(201);
+			});
 
-	test("true is true", () => {
-		expect(true).toBe(true);
+			test("GET /posts/:id with invalid UUID4", async () => {
+				const response = await app.inject({
+					method: "GET",
+					url: "/v1/posts/1",
+				});
+				expect(response.statusCode).toBe(400);
+			});
+			test("GET /posts/:id with valid UUID4", async () => {
+				const response = await app.inject({
+					method: "GET",
+					url: "/v1/posts/e8a7b311-367b-4105-a75d-929b930faafa",
+				});
+				expect(response.statusCode).toBe(404);
+			});
+		});
+
+		describe("Database with one post", () => {
+			test("GET /posts", async () => {
+				const addPostRequestBody = {
+					title: "test2",
+					contentMd: "test2 content",
+					authorId: "f59b36aa-94cc-40a8-b164-9b40645602dd",
+					imageUrl: "http://image.jpg",
+				} as const;
+				await app.inject({
+					method: "POST",
+					url: "/v1/posts",
+					payload: addPostRequestBody,
+				});
+				const response = await app.inject({
+					method: "GET",
+					url: "/v1/posts",
+				});
+				expect(response.statusCode).toBe(200);
+				const responseJson = response.json();
+				expect(responseJson).toHaveProperty("items");
+				expect(responseJson).toHaveProperty("meta");
+				expect(responseJson.meta).toEqual({
+					skip: 0,
+					take: 10,
+					totalItemsCount: 1,
+					pageItemsCount: 1,
+				});
+				expect(responseJson.items).toHaveLength(1);
+				expect(responseJson.items[0]).toHaveProperty("id");
+				expect(typeof responseJson.items[0].id).toBe("string");
+				expect(responseJson.items[0].id).not.toHaveLength(0);
+				expect((({id, ...rest}) => rest)(responseJson.items[0])).toEqual(addPostRequestBody);
+			});
+		});
 	});
 });
