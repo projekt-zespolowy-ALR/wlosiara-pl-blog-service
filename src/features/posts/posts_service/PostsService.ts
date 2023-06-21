@@ -33,4 +33,16 @@ export default class PostsService {
 	public async createPost(createPostPayload: CreatePostPayload): Promise<Post> {
 		return deentityifyPostEntity(await this.postsRepository.save(createPostPayload));
 	}
+
+	public async deletePostById(id: string): Promise<boolean> {
+		try {
+			await this.postsRepository.delete({id});
+			return true;
+		} catch (error) {
+			if (error instanceof EntityNotFoundError) {
+				throw new PostsServicePostWithGivenIdNotFoundError(id);
+			}
+			throw error;
+		}
+	}
 }
