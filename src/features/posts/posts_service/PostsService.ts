@@ -33,4 +33,18 @@ export default class PostsService {
 	public async createPost(createPostPayload: CreatePostPayload): Promise<Post> {
 		return deentityifyPostEntity(await this.postsRepository.save(createPostPayload));
 	}
+
+	public async getPostsByType(type: string, pagingOptions: PagingOptions): Promise<Page<Post>> {
+		if (type !== "news" && type !== "tips") {
+			throw new Error(`Invalid type ${type}`);
+		}
+
+		return (
+			await paginatedFindAndCount(this.postsRepository, pagingOptions, {
+				where: {
+					type,
+				},
+			})
+		).map(deentityifyPostEntity);
+	}
 }

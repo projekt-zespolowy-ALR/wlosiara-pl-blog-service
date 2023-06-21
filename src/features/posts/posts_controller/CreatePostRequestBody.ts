@@ -11,4 +11,7 @@ export default class CreatePostRequestBody {
 	public readonly title!: string;
 	@IsUrl()
 	public readonly imageUrl!: string;
+	@IsNotEmpty()
+	@IsString()
+	public readonly type!: "news" | "tips";
 }
