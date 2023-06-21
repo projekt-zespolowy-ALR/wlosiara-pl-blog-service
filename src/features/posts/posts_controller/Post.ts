@@ -4,4 +4,5 @@ export default class Post {
 	public readonly authorId!: string;
 	public readonly title!: string;
 	public readonly imageUrl!: string;
+	public readonly type!: "news" | "tips";
 }

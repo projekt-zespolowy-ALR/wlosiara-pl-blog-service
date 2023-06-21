@@ -12,4 +12,6 @@ export default class postEntity {
 	public title!: string;
 	@Column({name: "image_url", type: "text"})
 	public imageUrl!: string;
+	@Column({name: "type", type: "text"})
+	public type!: "news" | "tips";
 }

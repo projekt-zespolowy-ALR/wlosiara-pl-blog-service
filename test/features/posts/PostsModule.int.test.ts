@@ -79,6 +79,18 @@ describe("PostsModule", () => {
 					meta: {skip: 0, take: 10, totalItemsCount: 0, pageItemsCount: 0},
 				});
 			});
+
+			test("GET /posts?type=news", async () => {
+				const response = await app.inject({
+					method: "GET",
+					url: "/v1/posts?type=news",
+				});
+				expect(response.statusCode).toBe(200);
+				expect(response.json()).toEqual({
+					items: [],
+					meta: {skip: 0, take: 10, totalItemsCount: 0, pageItemsCount: 0},
+				});
+			});
 			test("GET /posts/:id", async () => {
 				const response = await app.inject({
 					method: "GET",
@@ -92,6 +104,7 @@ describe("PostsModule", () => {
 					contentMd: "test2 content",
 					authorId: "f59b36aa-94cc-40a8-b164-9b40645602dd",
 					imageUrl: "http://image.jpg",
+					type: "news",
 				} as const;
 				const response = await app.inject({
 					method: "POST",
@@ -124,6 +137,7 @@ describe("PostsModule", () => {
 					contentMd: "test2 content",
 					authorId: "f59b36aa-94cc-40a8-b164-9b40645602dd",
 					imageUrl: "http://image.jpg",
+					type: "news",
 				} as const;
 				await app.inject({
 					method: "POST",

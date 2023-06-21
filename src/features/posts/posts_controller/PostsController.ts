@@ -26,6 +26,7 @@ export default class PostsController {
 	}
 	@Get("/posts")
 	public async getPosts(
+		@Query("type") type: string | undefined,
 		@Query(
 			new ValidationPipe({
 				transform: true, // Transform to instance of PagingOptions
@@ -34,6 +35,9 @@ export default class PostsController {
 		)
 		pagingOptions: PagingOptions
 	): Promise<Page<WlosiaraPlBlogPost>> {
+		if (type !== undefined) {
+			return await this.postsService.getPostsByType(type, pagingOptions);
+		}
 		return await this.postsService.getPosts(pagingOptions);
 	}
 
@@ -62,9 +66,9 @@ export default class PostsController {
 	public async createPost(
 		@Body(
 			new ValidationPipe({
-				transform: true, // Transform to instance of CreateCatRequestBody
-				whitelist: true, // Do not allow other properties than those defined in CreateCatRequestBody
-				forbidNonWhitelisted: true, // Throw an error if other properties than those defined in CreateCatRequestBody are present
+				transform: true,
+				whitelist: true,
+				forbidNonWhitelisted: true,
 			})
 		)
 		createPostRequestBody: CreatePostRequestBody
