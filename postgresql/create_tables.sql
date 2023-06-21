@@ -9,3 +9,12 @@ CREATE TABLE posts (
 	type TEXT NOT NULL,
 	PRIMARY KEY (id)
 );
+
+CREATE TABLE comments (
+	id UUID DEFAULT uuid_generate_v4() NOT NULL,
+	author_id UUID NOT NULL,
+	post_id UUID NOT NULL,
+	text TEXT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (post_id) REFERENCES posts(id)
+);
