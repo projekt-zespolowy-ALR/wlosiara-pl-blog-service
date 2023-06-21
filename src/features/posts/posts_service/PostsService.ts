@@ -47,4 +47,15 @@ export default class PostsService {
 			})
 		).map(deentityifyPostEntity);
 	}
+	public async deletePostById(id: string): Promise<boolean> {
+		try {
+			await this.postsRepository.delete({id});
+			return true;
+		} catch (error) {
+			if (error instanceof EntityNotFoundError) {
+				throw new PostsServicePostWithGivenIdNotFoundError(id);
+			}
+			throw error;
+		}
+	}
 }
