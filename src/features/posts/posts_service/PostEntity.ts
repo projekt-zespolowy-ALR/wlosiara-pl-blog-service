@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, OneToMany} from "typeorm";
+import {CommentEntity} from "../../comments/comments_service/CommentEntity.js";
 
 @Entity({name: "posts"})
 export default class postEntity {
@@ -14,4 +15,7 @@ export default class postEntity {
 	public imageUrl!: string;
 	@Column({name: "type", type: "text"})
 	public type!: "news" | "tips";
+
+	@OneToMany(() => CommentEntity, (comment) => comment.post)
+	public comments!: CommentEntity[];
 }
